@@ -4,18 +4,16 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Determina o prefixo do caminho para os assets (CSS, JS, imagens)
-// Se o script atual estiver dentro da pasta /admin/, o prefixo será '../' para voltar um nível.
-// Caso contrário, o prefixo é '' (vazio), indicando que os assets estão em caminhos relativos à raiz.
 $isInsideAdminFolder = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
 $pathPrefix = $isInsideAdminFolder ? '../' : '';
 
 // Define o título da página dinamicamente
-$currentPage = basename($_SERVER['PHP_SELF']); // Obtém o nome do arquivo atual (ex: index.php)
-$pageTitle = $_SESSION['current_page_title'] ?? ''; // Tenta obter o título da sessão, se definido
+$currentPage = basename($_SERVER['PHP_SELF']);
+$pageTitle = $_SESSION['current_page_title'] ?? '';
 
 // Se o título não foi definido via sessão, define um título padrão baseado na página atual
 if (empty($pageTitle)) {
-    if ($isInsideAdminFolder) { // Títulos para páginas dentro da pasta /admin/
+    if ($isInsideAdminFolder) {
         switch ($currentPage) {
             case 'admin.php':
                 $pageTitle = 'Cadastro de Árvore';
@@ -27,10 +25,10 @@ if (empty($pageTitle)) {
                 $pageTitle = 'Gerenciar Administradores';
                 break;
             default:
-                $pageTitle = 'Painel Administrativo'; // Título padrão para outras páginas admin
+                $pageTitle = 'Painel Administrativo';
                 break;
         }
-    } else { // Títulos para páginas na raiz do projeto
+    } else {
         switch ($currentPage) {
             case 'index.php':
                 $pageTitle = 'Página Inicial';
@@ -39,7 +37,7 @@ if (empty($pageTitle)) {
                 $pageTitle = 'Catálogo de Árvores';
                 break;
             default:
-                $pageTitle = 'Catálogo de Árvores'; // Título padrão para outras páginas na raiz
+                $pageTitle = 'Catálogo de Árvores';
                 break;
         }
     }
@@ -52,8 +50,31 @@ if (empty($pageTitle)) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><?php echo htmlspecialchars($pageTitle); ?> - Catálogo de Árvores</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?php echo $pathPrefix; ?>favicon.ico">
+    <!-- ============== INÍCIO DAS NOVAS TAGS ============== -->
+
+    <!-- Meta Tags Padrão -->
+    <meta name="description" content="Um catálogo digital para documentar e promover a educação ambiental e a preservação da flora de Itapetininga.">
+    <meta name="author" content="Nathanael Netto e equipe da Fatec Itapetininga">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://catalogo-de-arvores.onrender.com/">
+    <meta property="og:title" content="Catálogo de Árvores - Fatec Itapetininga">
+    <meta property="og:description" content="Explore o catálogo de espécies arbóreas de Itapetininga. Um projeto para a educação e preservação ambiental.">
+    <meta property="og:image" content="https://catalogo-de-arvores.onrender.com/assets/images/og-image.png"> <!-- Atualize este link com sua imagem! -->
+
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://catalogo-de-arvores.onrender.com/">
+    <meta property="twitter:title" content="Catálogo de Árvores - Fatec Itapetininga">
+    <meta property="twitter:description" content="Explore o catálogo de espécies arbóreas de Itapetininga. Um projeto para a educação e preservação ambiental.">
+    <meta property="twitter:image" content="https://catalogo-de-arvores.onrender.com/assets/images/og-image.png"> <!-- Atualize este link com sua imagem! -->
+
+    <!-- Favicon e Ícones Adicionais (Alterado para .png) -->
+    <link rel="icon" type="image/png" href="<?php echo $pathPrefix; ?>favicon.png">
+    <link rel="apple-touch-icon" href="<?php echo $pathPrefix; ?>apple-touch-icon.png">
+
+    <!-- ============== FIM DAS NOVAS TAGS ============== -->
 
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,7 +91,7 @@ if (empty($pageTitle)) {
     <link rel="stylesheet" href="<?php echo $pathPrefix; ?>assets/css/custom_styles.css" /> 
     <link rel="stylesheet" href="<?php echo $pathPrefix; ?>assets/css/index_styles.css" />
 
-    <!-- Script para aplicar o tema (dark/light) inicial com base no localStorage ou preferência do sistema -->
+    <!-- Script para aplicar o tema (dark/light) inicial -->
     <script>
         (function() {
             try {
@@ -82,48 +103,48 @@ if (empty($pageTitle)) {
                     document.documentElement.classList.remove('dark');
                 }
             } catch (e) {
-                // Silencia erros caso localStorage não esteja acessível (ex: modo anônimo restrito)
+                // Silencia erros
             }
         })();
     </script>
-    <!-- Configuração do Tailwind CSS (pode ser estendida conforme necessário) -->
+    <!-- Configuração do Tailwind CSS -->
     <script>
         tailwind.config = {
-            darkMode: 'class', // Habilita o modo escuro baseado na classe 'dark' no HTML
+            darkMode: 'class',
             theme: {
-                extend: { // Estende o tema padrão do Tailwind
-                    colors: { // Paleta de cores personalizada
-                        primary: '#2E7D32', // Verde principal
-                        'primary-light': '#4CAF50', // Verde mais claro
-                        'primary-lighter': '#E8F5E9', // Verde bem claro (para fundos)
-                        secondary: '#FFA000', // Laranja secundário/destaque
-                        accent: '#00796B', // Verde azulado para acentos
-                        'card-border': '#4CAF50', // Cor da borda de cards
-                        'card-hover': 'rgba(46, 125, 50, 0.05)', // Sombra sutil para hover em cards
-                        'light-bg': '#f7faf7', // Fundo principal no modo claro
-                        'dark-bg': '#1a202c', // Fundo principal no modo escuro
-                        'dark-card': '#2d3748', // Fundo de cards no modo escuro
-                        'dark-card-header': '#1f2937', // Fundo de cabeçalhos de card no modo escuro
-                        'dark-text': '#e2e8f0', // Cor de texto principal no modo escuro
-                        'dark-primary': '#38a169', // Verde principal no modo escuro
-                        'dark-primary-hover': '#2f855a', // Hover do verde principal no modo escuro
-                        'dark-secondary': '#dd6b20', // Laranja secundário no modo escuro
-                        'dark-border': '#4a5568', // Cor de borda geral no modo escuro
-                        'dark-input-border': '#4A5568', // Borda de inputs no modo escuro
-                        'dark-input-bg': '#2D3748', // Fundo de inputs no modo escuro
-                        'dark-input-focus-ring': '#38A169', // Anel de foco para inputs no modo escuro
-                        'dark-remove-btn-bg': '#C53030', // Fundo de botões de remoção no modo escuro
-                        'dark-remove-btn-hover-bg': '#9B2C2C' // Hover de botões de remoção no modo escuro
+                extend: {
+                    colors: {
+                        primary: '#2E7D32',
+                        'primary-light': '#4CAF50',
+                        'primary-lighter': '#E8F5E9',
+                        secondary: '#FFA000',
+                        accent: '#00796B',
+                        'card-border': '#4CAF50',
+                        'card-hover': 'rgba(46, 125, 50, 0.05)',
+                        'light-bg': '#f7faf7',
+                        'dark-bg': '#1a202c',
+                        'dark-card': '#2d3748',
+                        'dark-card-header': '#1f2937',
+                        'dark-text': '#e2e8f0',
+                        'dark-primary': '#38a169',
+                        'dark-primary-hover': '#2f855a',
+                        'dark-secondary': '#dd6b20',
+                        'dark-border': '#4a5568',
+                        'dark-input-border': '#4A5568',
+                        'dark-input-bg': '#2D3748',
+                        'dark-input-focus-ring': '#38A169',
+                        'dark-remove-btn-bg': '#C53030',
+                        'dark-remove-btn-hover-bg': '#9B2C2C'
                     },
-                    boxShadow: { // Sombras personalizadas
+                    boxShadow: {
                         card: '0 2px 8px rgba(0, 0, 0, 0.08)',
                         'card-hover': '0 4px 12px rgba(0, 0, 0, 0.12)'
                     },
-                    maxHeight: { // Utilidades para altura máxima (usado em expansão de detalhes)
+                    maxHeight: {
                         '0': '0', 
-                        '9999px': '9999px' // Um valor grande para simular 'auto' em transições
+                        '9999px': '9999px'
                     },
-                    transitionProperty: { // Propriedades de transição personalizadas
+                    transitionProperty: {
                         height: 'height', 
                         'max-height': 'max-height'
                     }
@@ -131,20 +152,18 @@ if (empty($pageTitle)) {
             }
         }
     </script>
-    <!-- Scripts JS personalizados (deferidos para carregar após o parsing do HTML) -->
+    <!-- Scripts JS personalizados -->
     <script src="<?php echo $pathPrefix; ?>assets/js/style.js" defer></script>
 </head>
 <body class="bg-light-bg dark:bg-dark-bg text-gray-800 dark:text-dark-text flex flex-col min-h-screen">
 
-<!-- Cabeçalho principal da página -->
+<!-- O resto do seu header... -->
 <header class="fixed top-0 left-0 w-full bg-green-700 dark:bg-gray-800 text-white shadow-lg z-50 transition-colors duration-300">
     <div class="container mx-auto flex items-center justify-between px-4 sm:px-6 h-20">
         <!-- Logo/Título do Site -->
         <a href="<?php echo $pathPrefix; ?>index.php" 
            class="text-xl sm:text-2xl md:text-3xl font-bold hover:opacity-80 transition-opacity" data-aos="fade-down" data-aos-delay="100">
             <?php 
-                // Se estiver na área administrativa, mostra o título da página atual.
-                // Caso contrário, mostra o nome geral do catálogo.
                 if ($isInsideAdminFolder) {
                     echo htmlspecialchars($pageTitle);
                 } else {
@@ -165,20 +184,20 @@ if (empty($pageTitle)) {
                 <span class="hidden sm:inline">Catálogo</span>
             </a>
             
-            <?php // Links Condicionais para Administração (Login/Logout/Painel) ?>
+            <?php // Links Condicionais para Administração ?>
             <?php if (isset($_SESSION['admin_logado']) && $_SESSION['admin_logado'] === true): ?>
-                <!-- Link para o Painel Administrativo (se logado) -->
+                <!-- Link para o Painel Administrativo -->
                 <a href="<?php echo $pathPrefix; ?>admin/admin.php" class="flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg hover:bg-green-600 dark:hover:bg-gray-700 transition text-sm md:text-base <?php if ($currentPage === 'admin.php' || $currentPage === 'gerenciar_usuarios_admin.php') echo 'bg-green-600 dark:bg-dark-primary font-semibold'; ?>">
                     <i class="fas fa-user-cog text-md md:text-lg"></i>
                     <span class="hidden sm:inline">Painel Admin</span>
                 </a>
-                <!-- Link para Logout (se logado) -->
+                <!-- Link para Logout -->
                 <a href="<?php echo $pathPrefix; ?>admin/logout_admin.php" class="flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition text-sm md:text-base">
                     <i class="fas fa-sign-out-alt text-md md:text-lg"></i>
                     <span class="hidden sm:inline">Sair</span>
                 </a>
             <?php else: ?>
-                <!-- Link para Login Administrativo (se não logado) -->
+                <!-- Link para Login Administrativo -->
                 <a href="<?php echo $pathPrefix; ?>admin/login_admin.php" class="flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg hover:bg-green-600 dark:hover:bg-gray-700 transition text-sm md:text-base <?php if ($currentPage === 'login_admin.php') echo 'bg-green-600 dark:bg-dark-primary font-semibold'; ?>">
                     <i class="fas fa-user-shield text-md md:text-lg"></i>
                     <span class="hidden sm:inline">Admin</span>
