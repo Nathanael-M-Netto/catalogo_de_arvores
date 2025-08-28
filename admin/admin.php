@@ -325,8 +325,30 @@ include __DIR__ . '/../templates/header.php';
                         onclick="return confirm('ATENÇÃO: Isso irá deletar a árvore permanentemente. Deseja continuar?');">
                     <i class="fas fa-trash-alt"></i> Deletar
                 </button>
+                <button type="button" id="gerar-qrcode-btn" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 justify-center" <?php if (!$id_arvore_carregada) echo 'style="display: none;"'; ?>>
+                    <i class="fas fa-qrcode"></i> Gerar QR Code
+                </button>
             </div>
         </form>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div id="qrcode-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-dark-card p-8 rounded-2xl shadow-card max-w-sm w-full text-center">
+            <h3 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">QR Code</h3>
+            <div id="qrcode-container" class="mb-4"></div>
+            <div class="flex gap-4">
+                <button id="imprimir-qrcode-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-colors">
+                    Imprimir
+                </button>
+                <button id="salvar-qrcode-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-colors">
+                    Salvar
+                </button>
+                <button id="fechar-modal-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
     </div>
 
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 -mt-4">
@@ -432,3 +454,73 @@ if (file_exists(__DIR__ . '/../templates/footer.php')) {
 }
 unset($_SESSION['current_page_title']);
 ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gerarQrCodeBtn = document.getElementById('gerar-qrcode-btn');
+    const qrCodeModal = document.getElementById('qrcode-modal');
+    const qrCodeContainer = document.getElementById('qrcode-container');
+    const imprimirQrCodeBtn = document.getElementById('imprimir-qrcode-btn');
+    const salvarQrCodeBtn = document.getElementById('salvar-qrcode-btn');
+    const fecharModalBtn = document.getElementById('fechar-modal-btn');
+    const idArvoreInput = document.getElementById('id_arvore');
+
+    if (gerarQrCodeBtn) {
+        gerarQrCodeBtn.addEventListener('click', function() {
+            const arvoreId = idArvoreInput.value;
+            if (arvoreId) {
+                const url = `https://catalogo-de-arvores.onrender.com/catalogo.php?busca=#${arvoreId}`;
+                qrCodeContainer.innerHTML = ''; // Limpa o container
+                
+                // Gera o QR Code usando uma biblioteca (ex: qrcode.js)
+                // Como não temos a biblioteca no front-end, vamos buscar a imagem do backend
+                fetch(`gerar_qrcode.php?id=${arvoreId}`)
+                    .then(response => response.text())
+                    .then(qrCodeSvg => {
+                        qrCodeContainer.innerHTML = qrCodeSvg;
+                        qrCodeModal.classList.remove('hidden');
+                    });
+            }
+        });
+    }
+
+    if (fecharModalBtn) {
+        fecharModalBtn.addEventListener('click', function() {
+            qrCodeModal.classList.add('hidden');
+        });
+    }
+
+    if (imprimirQrCodeBtn) {
+        imprimirQrCodeBtn.addEventListener('click', function() {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>QR Code</title></head><body>');
+            printWindow.document.write(qrCodeContainer.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    }
+
+    if (salvarQrCodeBtn) {
+        salvarQrCodeBtn.addEventListener('click', function() {
+            const svgEl = qrCodeContainer.querySelector('svg');
+            const svgData = new XMLSerializer().serializeToString(svgEl);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const pngFile = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.download = `qrcode_arvore_${idArvoreInput.value}.png`;
+                downloadLink.href = pngFile;
+                downloadLink.click();
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+        });
+    }
+});
+</script>
+
