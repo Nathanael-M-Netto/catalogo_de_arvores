@@ -111,42 +111,49 @@
             </div>
         </div>
     </section>
-
     <section id="equipe" class="py-16 md:py-24 bg-white dark:bg-dark-card">
-        <div class="container mx-auto px-6" data-aos="fade-up">
-            <h3 class="text-4xl md:text-5xl font-semibold text-primary dark:text-dark-primary mb-12 text-center">Nossa Equipe</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-                <?php
-                $membros = [
-                    ['nome' => 'Nathanael Netto'],
-                    ['nome' => 'Camilly Santos'],
-                    ['nome' => 'Matheus Poles'],
-                    ['nome' => 'Otavio Augusto'],
-                    ['nome' => 'Enzo Padilha'],
-                    ['nome' => 'Kayke Yuji'],
-                    ['nome' => 'Marciel Silva'],
-                ];
-                $github_url = "https://github.com/JablesPoles/mapeamento-arvores";
-                $cargo_padrao = "Programador(a)";
+    <div class="container mx-auto px-6" data-aos="fade-up">
+        <h3 class="text-4xl md:text-5xl font-semibold text-primary dark:text-dark-primary mb-12 text-center">Nossa Equipe</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            <?php
+            // Array de membros da equipe com seus nomes e os nomes dos arquivos de imagem correspondentes.
+            // Os nomes dos arquivos devem estar na pasta 'images/' na raiz do projeto.
+            $membros = [
+                ['nome' => 'Nathanael Netto', 'imagem' => 'Nathanael.jpg'],
+                ['nome' => 'Camilly Santos', 'imagem' => 'Camilly.jpeg'],
+                ['nome' => 'Matheus Poles', 'imagem' => 'Matheus.jpeg'], // Adicione o nome da imagem para Matheus Poles
+                ['nome' => 'Otavio Augusto', 'imagem' => 'Otavio.jpeg'],
+                ['nome' => 'Enzo Padilha', 'imagem' => 'Enzo.jpeg'], // Adicione o nome da imagem para Enzo Padilha
+                ['nome' => 'Kayke Yuji', 'imagem' => 'Kayke.jpeg'],
+                ['nome' => 'Marciel Silva', 'imagem' => 'Marciel.jpeg'],
+            ];
+            $github_url = "https://github.com/JablesPoles/mapeamento-arvores";
+            $cargo_padrao = "Programador(a)";
 
-                foreach ($membros as $index => $membro): ?>
-                    <div class="flex flex-col items-center bg-light-bg dark:bg-dark-bg p-4 rounded-xl shadow-card transition-all duration-300 hover:shadow-xl hover:scale-105 max-w-xs mx-auto w-full" data-aos="zoom-in" data-aos-delay="<?= $index * 100 ?>">
-                        <img src="https://placehold.co/112x112/E8F5E9/2E7D32?text=<?= urlencode(substr($membro['nome'], 0, 1)) ?>" alt="Foto de <?= htmlspecialchars($membro['nome']) ?>" class="w-28 h-28 rounded-full mb-3 object-cover shadow-md">
-                        <h4 class="text-lg font-semibold text-gray-800 dark:text-white text-center"><?= htmlspecialchars($membro['nome']) ?></h4>
-                        <p class="text-sm text-primary-light dark:text-primary-lighter text-center"><?= htmlspecialchars($cargo_padrao) ?></p>
-                    </div>
-                <?php endforeach; ?>
+            foreach ($membros as $index => $membro):
+                // Define o caminho da imagem. Se a imagem for um placeholder, usa um URL específico.
+                // Caso contrário, assume que a imagem está na pasta 'images/'.
+                $image_src = ($membro['imagem'] === 'placeholder.png') ?
+                             "https://placehold.co/112x112/E8F5E9/2E7D32?text=" . urlencode(substr($membro['nome'], 0, 1)) :
+                             "images/" . htmlspecialchars($membro['imagem']);
+            ?>
+                <div class="flex flex-col items-center bg-light-bg dark:bg-dark-bg p-4 rounded-xl shadow-card transition-all duration-300 hover:shadow-xl hover:scale-105 max-w-xs mx-auto w-full" data-aos="zoom-in" data-aos-delay="<?= $index * 100 ?>">
+                    <img src="<?= $image_src ?>" alt="Foto de <?= htmlspecialchars($membro['nome']) ?>" class="w-28 h-28 rounded-full mb-3 object-cover shadow-md">
+                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white text-center"><?= htmlspecialchars($membro['nome']) ?></h4>
+                    <p class="text-sm text-primary-light dark:text-primary-lighter text-center"><?= htmlspecialchars($cargo_padrao) ?></p>
+                </div>
+            <?php endforeach; ?>
 
-                <a href="<?= htmlspecialchars($github_url) ?>" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center bg-light-bg dark:bg-dark-bg p-4 rounded-xl shadow-card transition-all duration-300 hover:shadow-xl hover:scale-105 max-w-xs mx-auto w-full" data-aos="zoom-in" data-aos-delay="<?= count($membros) * 100 ?>">
-                    <div class="w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-gray-200 dark:bg-gray-700 shadow-md">
-                        <i class="fab fa-github text-5xl text-gray-800 dark:text-white"></i>
-                    </div>
-                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white text-center">Nosso Projeto</h4>
-                    <p class="text-sm text-primary-light dark:text-primary-lighter text-center">Veja no GitHub</p>
-                </a>
-            </div>
+            <a href="<?= htmlspecialchars($github_url) ?>" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center bg-light-bg dark:bg-dark-bg p-4 rounded-xl shadow-card transition-all duration-300 hover:shadow-xl hover:scale-105 max-w-xs mx-auto w-full" data-aos="zoom-in" data-aos-delay="<?= count($membros) * 100 ?>">
+                <div class="w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-gray-200 dark:bg-gray-700 shadow-md">
+                    <i class="fab fa-github text-5xl text-gray-800 dark:text-white"></i>
+                </div>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-white text-center">Nosso Projeto</h4>
+                <p class="text-sm text-primary-light dark:text-primary-lighter text-center">Veja no GitHub</p>
+            </a>
         </div>
-    </section>
+    </div>
+</section>
     <section id="contato" class="py-16 md:py-24 bg-light-bg dark:bg-dark-bg">
         <div class="container mx-auto px-6 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             <div class="lg:w-1/2" data-aos="fade-right">
